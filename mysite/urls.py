@@ -16,8 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from myapp import views
+
+from django.urls import path
+from myapp.views import signup, login_view
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name="index"),
+    path('index/', views.index, name="index"),
     path('delete/<int:id>/', views.delete_consume, name="delete"),
+	path('signup/', signup, name='signup'),
+    path('', login_view, name='login'),
 ]
