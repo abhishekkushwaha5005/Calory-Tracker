@@ -7,14 +7,43 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
             integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <style>
+            body {
+                background-color: #f8f9fa;
+            }
+            .navbar {
+                background-color: #07333d;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .navbar-brand {
+                color: #fff;
+                font-weight: 20px;
+                font-size: 15px;
+            }
+            .bold{
+                font-weight: bold;
+                font-size: 24px;
+            }
+            .anim {
+                animation: bounce 1s ease infinite;
+            }
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+            }
+        </style>
     </head>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <nav class="navbar navbar-dark bg-info">
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-dark justify-content-between">
+                <span class="navbar-brand bold anim">Calorie Tracker</span>
+                <div class="ml-auto">
                     <a href="{% url 'index' %}" class="navbar-brand">Home</a>
-                </nav>
-            </div>
+                    <a href="{% url 'food_details' %}" class="navbar-brand">Food Information</a>
+                    <a href="{% url 'login' %}" class="btn btn-danger">Sign Out</a>
+                    
+                </div>
+            </nav>
         </div>
     </div>
 </head>

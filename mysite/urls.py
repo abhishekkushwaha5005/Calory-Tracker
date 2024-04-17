@@ -18,7 +18,7 @@ from django.urls import path
 from myapp import views
 
 from django.urls import path
-from myapp.views import signup, login_view
+from myapp.views import signup, login_view, food_details
 
 
 urlpatterns = [
@@ -27,4 +27,5 @@ urlpatterns = [
     path('delete/<int:id>/', views.delete_consume, name="delete"),
 	path('signup/', signup, name='signup'),
     path('', login_view, name='login'),
+	path('food_details/', food_details, name='food_details'),
 ]

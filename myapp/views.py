@@ -5,6 +5,9 @@ from django.contrib.auth import login, authenticate
 from .forms import LoginForm
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm
+import requests
+import json
+API_KEYS = ""
 
 def signup(request):
     if request.method == 'POST':
@@ -59,5 +62,26 @@ def delete_consume(request, id):
     consumed_food = Consume.objects.get(id=id)
     if request.method == 'POST':
         consumed_food.delete()
-        return redirect('/')
+        return redirect('/index')
     return render(request, 'myapp/delete.html')
+
+
+
+from django.shortcuts import render
+
+
+def food_details(request):
+    if request.method == 'POST':
+        query = request.POST['query']
+        api_url = 'https://api.api-ninjas.com/v1/nutrition?query='
+        api_request = requests.get(
+            api_url + query, headers={'X-Api-Key': API_KEYS})
+        try:
+            api = json.loads(api_request.content)
+            print(api_request.content)
+        except Exception as e:
+            api = "oops! There was an error"
+            print(e)
+        return render(request, 'myapp/food_info.html', {'api': api})
+    else:
+        return render(request, 'myapp/food_info.html', {'query': 'Enter a valid query'})
