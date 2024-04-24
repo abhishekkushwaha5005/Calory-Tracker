@@ -18,7 +18,7 @@ from django.urls import path
 from myapp import views
 
 from django.urls import path
-from myapp.views import signup, login_view, food_details
+from myapp.views import signup, login_view, food_details, bmi
 
 
 urlpatterns = [
@@ -28,4 +28,5 @@ urlpatterns = [
 	path('signup/', signup, name='signup'),
     path('', login_view, name='login'),
 	path('food_details/', food_details, name='food_details'),
+	path('bmi/', bmi, name='bmi'),
 ]

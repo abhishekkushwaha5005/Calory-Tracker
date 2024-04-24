@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Predictor</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #07333d;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            color: #fff;
+            font-weight: 20px;
+            font-size: 15px;
+        }
+        .bold{
+            padding-left: 15px;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .anim {
+            animation: bounce 1s ease infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .btn-danger {
+            background-color: #801f18;
+            border-color: #801f18;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #ff4d4d;
+            border-color: #ff4d4d;
+            transform: scale(1.1);
+        }
+        .bg-info {
+            background-color: #07333d; 
+        }
+        .table-primary th, .table-primary td {
+            background-color: #07333d;
+            color: #fff;
+        }
+        .table-primary tbody tr:nth-of-type(odd) {
+            background-color: #f8f9fa;
+        }
+        .card-header {
+            background-color: #07333d;
+            color: #fff;
+        }
+        .bmi-meter-container {
+            margin-top: 20px;
+        }
+        .bmi-meter {
+            height: 30px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .bmi-meter-fill {
+            height: 100%;
+            background-color: #28a745; /* Default color */
+        }
+        .red {
+            background-color: #dc3545 !important;
+        }
+        .yellow {
+            background-color: #ffc107 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="row">
+        <div class="col-md-12">
+            <nav class="navbar navbar-dark justify-content-between">
+                <span class="navbar-brand bold anim">Calorie Tracker</span>
+                <div class="ml-auto">
+                    <a href="{% url 'index' %}" class="navbar-brand">Home</a>
+                    <a href="{% url 'food_details' %}" class="navbar-brand">Food Information</a>
+                    <a href="{% url 'bmi' %}" class="navbar-brand">BMI Predictor</a>
+                    <a href="{% url 'login' %}" class="btn btn-danger">Sign Out</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- BMI Prediction Form -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align:center">BMI Prediction</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="bmiForm">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="gender">Gender:</label>
+                                <select class="form-control" id="gender" name="gender">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="height">Height (in cm):</label>
+                                <input type="number" class="form-control" id="height" name="height" required min="0">
+                                <div class="invalid-feedback">
+                                    Height cannot be negative.
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="weight">Weight (in kg):</label>
+                                <input type="number" class="form-control" id="weight" name="weight" required min="0">
+                                <div class="invalid-feedback">
+                                    Weight cannot be negative.
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Predict BMI</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BMI Meter -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 style="text-align:center">Your BMI</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="bmi-meter">
+                            <div class="bmi-meter-fill" id="bmiFill"></div>
+                        </div>
+                        <div id="bmiValue" style="text-align:center; margin-top: 10px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <script>
+        // Function to update BMI Meter
+        function updateBMIMeter(bmi, modelResponse) {
+            var bmiFill = document.getElementById("bmiFill");
+            var bmiValue = document.getElementById("bmiValue");
+
+            // Update BMI value
+            bmiValue.innerText = "Your BMI: " + bmi + " and condition is: " + modelResponse 
+
+            // Update BMI meter color based on BMI range
+            if (bmi < 18.5) {
+                bmiFill.style.backgroundColor = "#ffc107"; // Yellow
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                bmiFill.style.backgroundColor = "#28a745"; // Green
+            } else {
+                bmiFill.style.backgroundColor = "#dc3545"; // Red
+            }
+
+            // Update BMI meter fill level
+            var bmiPercent = (bmi - 15) / 15 * 100; // Scale BMI to 0-30 range
+            bmiFill.style.width = bmiPercent + "%";
+        }
+
+        document.getElementById('bmiForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Retrieve form data
+            var formData = new FormData(this);
+            
+            // Make AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{% url "bmi" %}', true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var response = JSON.parse(xhr.responseText);
+                    var bmi = response.bmi;
+                    var modelResponse = response.model_response;
+                    updateBMIMeter(bmi, modelResponse);
+                } else {
+                    console.error(xhr.statusText);
+                }
+            };
+            xhr.onerror = function () {
+                console.error('Error:', xhr.statusText);
+            };
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>

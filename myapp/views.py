@@ -6,7 +6,10 @@ from .forms import LoginForm
 from django.views.decorators.csrf import csrf_exempt
 from .forms import CustomUserCreationForm
 import requests
+from django.http import JsonResponse
 import json
+import joblib
+import math
 API_KEYS = ""
 
 def signup(request):
@@ -66,10 +69,6 @@ def delete_consume(request, id):
     return render(request, 'myapp/delete.html')
 
 
-
-from django.shortcuts import render
-
-
 def food_details(request):
     if request.method == 'POST':
         query = request.POST['query']
@@ -85,3 +84,30 @@ def food_details(request):
         return render(request, 'myapp/food_info.html', {'api': api})
     else:
         return render(request, 'myapp/food_info.html', {'query': 'Enter a valid query'})
+    
+def bmi(request):
+    if request.method == 'POST':
+        prediction_mapper = {
+            0 : "Extremely Weak",
+            1 : "Weak",
+            2 : "Normal",
+            3 : "Overweight",
+            4 : "Obesity",
+            5 : "Extreme Obesity",
+        }
+        weight = request.POST['weight']
+        height = request.POST['height']
+        gender = request.POST['gender']
+        if gender == 'male':
+            gender = 0
+        else:
+            gender = 1
+        bmi = round(float(weight) / ((float(height)/100) ** 2), 2)
+        print(height, weight, gender)
+        model = joblib.load('/Users/abhishekkushwaha/Dev/calary tracker/bmi_model.pkl') 
+        model_response = math.floor(model.predict([[int(height), int(weight), gender]])[0])
+        print(height, weight)
+        print(bmi)
+        return JsonResponse({"bmi": bmi, "model_response": prediction_mapper.get(model_response)})
+    else:
+        return render(request, 'myapp/bmi.html', {'query': 'Enter a valid query'})
